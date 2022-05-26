@@ -43,9 +43,9 @@
 
     <idv.luchafang.videotrimmer.VideoTrimmerView
             android:id="@+id/videoTrimmerView"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="11dp"
+            android:layout_marginBottom="70dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -53,6 +53,8 @@
             app:vtv_window_border_color="@android:color/white"
             app:vtv_window_border_width="2dp"
             app:vtv_window_left_bar="@drawable/trimmer_left_bar"
-            app:vtv_window_right_bar="@drawable/trimmer_right_bar"/>
+            app:vtv_window_right_bar="@drawable/trimmer_right_bar"
+            tools:layout_editor_absoluteX="0dp"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,6 +8,7 @@ import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import idv.luchafang.videotrimmer.data.TrimmerDraft
 import idv.luchafang.videotrimmer.slidingwindow.SlidingWindowView
 import idv.luchafang.videotrimmer.tools.dpToPx
@@ -76,7 +77,7 @@ class VideoTrimmerView @JvmOverloads constructor(
     }
 
     private fun initViews() {
-        videoFrameListView.layoutManager = LinearLayoutManager(context, HORIZONTAL, false)
+        videoFrameListView.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
     }
 
     /* -------------------------------------------------------------------------------------------*/

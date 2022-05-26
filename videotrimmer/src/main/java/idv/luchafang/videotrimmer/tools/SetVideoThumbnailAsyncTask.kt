@@ -31,7 +31,7 @@ internal class SetVideoThumbnailAsyncTask @JvmOverloads constructor(
 
             val timeUs = if (timeMs == 0L) -1 else timeMs * 1000
             val bitmap = retriever.getFrameAtTime(timeUs)
-            scaleBitmap(bitmap, size)
+            scaleBitmap(bitmap!!, size)
         } catch (e: Exception) {
             null
         } finally {

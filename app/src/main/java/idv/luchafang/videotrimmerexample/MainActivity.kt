@@ -45,12 +45,18 @@ class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChange
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+//        pickVideoBtn.setOnClickListener {
+//            Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
+//                .apply {
+//                    type = "video/*"
+//                }
+//                .also { startActivityForResult(it, REQ_PICK_VIDEO) }
+//
+//        }
         pickVideoBtn.setOnClickListener {
-            Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
-                .apply {
-                    type = "video/*"
-                }
-                .also { startActivityForResult(it, REQ_PICK_VIDEO) }
+            displayTrimmerView(
+                File(filesDir, "Firefox.mp4").absolutePath
+            )
         }
     }
 
