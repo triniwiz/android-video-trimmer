@@ -1,5 +1,6 @@
 package idv.luchafang.videotrimmer.data
 
+import android.net.Uri
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
@@ -11,8 +12,9 @@ data class TrimmerDraft(
     val offsetMillis: Long,
     val framePosition: Int = 0,
     val frameOffset: Int = 0,
-    val createdTime: Long = System.currentTimeMillis()
-): Parcelable, Comparable<TrimmerDraft> {
+    val createdTime: Long = System.currentTimeMillis(),
+    val uri: Uri? = null
+) : Parcelable, Comparable<TrimmerDraft> {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -20,10 +22,17 @@ data class TrimmerDraft(
 
         other as TrimmerDraft
 
+        if (uri != null && other.uri != null) {
+            return uri == other.uri
+        }
+
         return path == other.path
     }
 
     override fun hashCode(): Int {
+        if (uri != null) {
+            return uri.hashCode()
+        }
         return path.hashCode()
     }
 

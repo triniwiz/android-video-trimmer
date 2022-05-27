@@ -2,6 +2,7 @@ package idv.luchafang.videotrimmer
 
 import android.content.Context
 import android.graphics.Color
+import android.net.Uri
 import android.util.AttributeSet
 import android.widget.LinearLayout.HORIZONTAL
 import androidx.annotation.ColorInt
@@ -118,6 +119,11 @@ class VideoTrimmerView @JvmOverloads constructor(
         return this
     }
 
+    fun setVideo(video: Uri): VideoTrimmerView {
+        presenter?.setVideo(video)
+        return this
+    }
+
     fun setMaxDuration(millis: Long): VideoTrimmerView {
         presenter?.setMaxDuration(millis)
         return this
@@ -163,6 +169,12 @@ class VideoTrimmerView @JvmOverloads constructor(
 
     override fun setupAdaptor(video: File, frames: List<Long>, frameWidth: Int) {
         adaptor = VideoFramesAdaptor(video, frames, frameWidth).also {
+            videoFrameListView.adapter = it
+        }
+    }
+
+    override fun setupAdaptor(video: Uri, frames: List<Long>, frameWidth: Int) {
+        adaptor = VideoFramesAdaptor(null, frames, frameWidth, video).also {
             videoFrameListView.adapter = it
         }
     }

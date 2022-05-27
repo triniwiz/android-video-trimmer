@@ -18,12 +18,12 @@
             android:paddingBottom="2dp"/>
 
     <idv.luchafang.videotrimmer.slidingwindow.SlidingWindowView
-            android:id="@+id/slidingWindowView"
-            android:layout_width="wrap_content"
-            android:layout_height="43dp"
-            android:layout_marginStart="11dp"
-            android:layout_marginTop="7dp"
-            android:layout_marginEnd="11dp"
-            android:layout_centerInParent="true"/>
+        android:id="@+id/slidingWindowView"
+        android:layout_width="wrap_content"
+        android:layout_height="43dp"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="11dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginEnd="11dp" />
 
 </RelativeLayout>

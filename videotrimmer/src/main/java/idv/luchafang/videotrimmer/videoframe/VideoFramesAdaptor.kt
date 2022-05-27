@@ -1,18 +1,20 @@
 package idv.luchafang.videotrimmer.videoframe
 
+import android.net.Uri
 import android.os.AsyncTask
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import idv.luchafang.videotrimmer.tools.SetVideoThumbnailAsyncTask
+import idv.luchafang.videotrimmer.tools.SetVideoThumbnailTask
 import java.io.File
 
 internal class VideoFramesAdaptor(
-        private val video: File,
-        private val frames: List<Long>,
-        private val frameWidth: Int
+    private val video: File?,
+    private val frames: List<Long>,
+    private val frameWidth: Int,
+    private val videoUri: Uri? = null
 ) : RecyclerView.Adapter<VideoFramesAdaptor.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -28,8 +30,12 @@ internal class VideoFramesAdaptor(
         val view = holder.itemView as ImageView
         val frame = frames[position]
 
-        SetVideoThumbnailAsyncTask(view, frame)
-                .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, video)
+        val task = SetVideoThumbnailTask(view, frame)
+        if (videoUri != null) {
+            task.execute(videoUri)
+        } else {
+            task.execute(video)
+        }
     }
 
     override fun getItemCount(): Int = frames.size

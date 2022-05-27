@@ -1,5 +1,6 @@
 package idv.luchafang.videotrimmer
 
+import android.net.Uri
 import idv.luchafang.videotrimmer.data.TrimmerDraft
 import idv.luchafang.videotrimmer.slidingwindow.SlidingWindowView
 import idv.luchafang.videotrimmer.tools.extractVideoLength
@@ -16,11 +17,13 @@ internal class VideoTrimmerPresenter : VideoTrimmerContract.Presenter,
     private var view: VideoTrimmerContract.View? = null
 
     private var video: File? = null
+    private var videoUri: Uri? = null
     private var maxDuration = 30_000L
     private var minDuration = 3_000L
     private var frameCountInWindow = 10
 
-    private var onSelectedRangeChangedListener: VideoTrimmerView.OnSelectedRangeChangedListener? = null
+    private var onSelectedRangeChangedListener: VideoTrimmerView.OnSelectedRangeChangedListener? =
+        null
 
     private var videoLength = 0L
     private var videoWindowLength = 0L
@@ -53,6 +56,10 @@ internal class VideoTrimmerPresenter : VideoTrimmerContract.Presenter,
         this.video = video
     }
 
+    override fun setVideo(video: Uri) {
+        this.videoUri = video
+    }
+
     override fun setMaxDuration(millis: Long) {
         this.maxDuration = millis
     }
@@ -70,7 +77,7 @@ internal class VideoTrimmerPresenter : VideoTrimmerContract.Presenter,
     }
 
     override fun isValidState(): Boolean {
-        return video != null
+        return (video != null || videoUri != null)
                 && maxDuration > 0L
                 && minDuration > 0L
                 && maxDuration >= minDuration
@@ -80,9 +87,14 @@ internal class VideoTrimmerPresenter : VideoTrimmerContract.Presenter,
         if (!isValidState()) {
             return
         }
+        val video = this.video ?: this.videoUri ?: return
+        videoLength = if (video is Uri) {
+            val context = view?.getContext() ?: return
+            extractVideoLength(context, video)
+        } else {
+            extractVideoLength((video as File).path)
+        }
 
-        val video = this.video ?: return
-        videoLength = extractVideoLength(video.path)
 
         if (videoLength < minDuration) {
             // TODO
@@ -113,7 +125,13 @@ internal class VideoTrimmerPresenter : VideoTrimmerContract.Presenter,
         rawEndMillis = videoWindowLength
 
         view?.setupSlidingWindow()
-        view?.setupAdaptor(video, frames, ceil(frameWidth).toInt())
+        if (video is Uri) {
+            view?.setupAdaptor(video, frames, ceil(frameWidth).toInt())
+        }
+
+        if (video is File) {
+            view?.setupAdaptor(video, frames, ceil(frameWidth).toInt())
+        }
 
         onSelectedRangeChangedListener?.onSelectRangeEnd(rawStartMillis, rawEndMillis)
     }
@@ -126,7 +144,9 @@ internal class VideoTrimmerPresenter : VideoTrimmerContract.Presenter,
         rawEndMillis,
         offsetMillis,
         framePosition,
-        frameOffset
+        frameOffset,
+        System.currentTimeMillis(),
+        videoUri
     )
 
     override fun restoreTrimmer(draft: TrimmerDraft) {
@@ -193,7 +213,11 @@ internal class VideoTrimmerPresenter : VideoTrimmerContract.Presenter,
         onSelectedRangeChangedListener?.onSelectRangeStart()
     }
 
-    override fun onScrollVideoFrames(offsetPercentage: Float, framePosition: Int, frameOffset: Int) {
+    override fun onScrollVideoFrames(
+        offsetPercentage: Float,
+        framePosition: Int,
+        frameOffset: Int
+    ) {
         if (videoWindowLength == videoLength) {
             return
         }

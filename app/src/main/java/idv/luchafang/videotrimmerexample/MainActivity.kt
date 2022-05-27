@@ -39,25 +39,27 @@ class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChange
 
     private var videoPath: String = ""
 
+    private var videoUri: Uri? = null
+
     /* -------------------------------------------------------------------------------------------*/
     /* Activity */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-//        pickVideoBtn.setOnClickListener {
-//            Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
-//                .apply {
-//                    type = "video/*"
-//                }
-//                .also { startActivityForResult(it, REQ_PICK_VIDEO) }
-//
-//        }
         pickVideoBtn.setOnClickListener {
-            displayTrimmerView(
-                File(filesDir, "Firefox.mp4").absolutePath
-            )
+            Intent(Intent.ACTION_GET_CONTENT)
+                .apply {
+                    type = "video/*"
+                }
+                .also { startActivityForResult(it, REQ_PICK_VIDEO) }
+
         }
+//        pickVideoBtn.setOnClickListener {
+//            displayTrimmerView(
+//                File(filesDir, "Firefox.mp4").absolutePath
+//            )
+//        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -66,8 +68,13 @@ class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChange
         when (requestCode) {
             REQ_PICK_VIDEO -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    videoPath = getRealPathFromMediaData(data?.data)
-                    displayTrimmerView(videoPath)
+                    //videoPath = getRealPathFromMediaData(data?.data)
+                    // displayTrimmerView(videoPath)
+                    try {
+                        videoUri = data?.data
+                        displayTrimmerView(videoUri!!)
+                    } catch (e: Exception) {
+                    }
                 }
             }
         }
@@ -83,7 +90,11 @@ class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChange
         )
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         if (requestCode == REQ_PERMISSION && grantResults.firstOrNull() != PackageManager.PERMISSION_GRANTED) {
@@ -103,7 +114,13 @@ class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChange
 
     override fun onSelectRangeEnd(startMillis: Long, endMillis: Long) {
         showDuration(startMillis, endMillis)
-        playVideo(videoPath, startMillis, endMillis)
+        if (videoUri != null) {
+            playVideo(videoUri, startMillis, endMillis)
+        } else {
+            playVideo(videoPath, startMillis, endMillis)
+        }
+
+
     }
 
     /* -------------------------------------------------------------------------------------------*/
@@ -111,7 +128,18 @@ class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChange
     private fun displayTrimmerView(path: String) {
         videoTrimmerView
             .setVideo(File(path))
-            .setMaxDuration(30_000)
+            .setMaxDuration(60_000)
+            .setMinDuration(3_000)
+            .setFrameCountInWindow(8)
+            .setExtraDragSpace(dpToPx(2f))
+            .setOnSelectedRangeChangedListener(this)
+            .show()
+    }
+
+    private fun displayTrimmerView(uri: Uri) {
+        videoTrimmerView
+            .setVideo(uri)
+            .setMaxDuration(60_000)
             .setMinDuration(3_000)
             .setFrameCountInWindow(8)
             .setExtraDragSpace(dpToPx(2f))
@@ -126,6 +154,24 @@ class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChange
 
         val source = ProgressiveMediaSource.Factory(dataSourceFactory)
             .createMediaSource(Uri.parse(path))
+            .let {
+                ClippingMediaSource(
+                    it,
+                    startMillis * 1000L,
+                    endMillis * 1000L
+                )
+            }
+
+        player.playWhenReady = true
+        player.prepare(source)
+    }
+
+
+    private fun playVideo(path: Uri?, startMillis: Long, endMillis: Long) {
+        if (path == null) return
+
+        val source = ProgressiveMediaSource.Factory(dataSourceFactory)
+            .createMediaSource(path)
             .let {
                 ClippingMediaSource(
                     it,

@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
+import android.net.Uri
 import android.view.View
 import android.view.animation.Interpolator
 import android.view.animation.LinearInterpolator
@@ -52,6 +53,20 @@ internal fun animateAlpha(
     if (autoPlay) {
         start()
     }
+}
+
+internal fun extractVideoLength(context: Context, videoUri: Uri): Long {
+    val retriever = try {
+        MediaMetadataRetriever()
+            .apply { setDataSource(context, videoUri) }
+    } catch (e: IllegalArgumentException) {
+        return 0L
+    }
+
+    val length = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+    retriever.release()
+
+    return length?.toLong() ?: 0L
 }
 
 internal fun extractVideoLength(videoPath: String): Long {
