@@ -26,8 +26,18 @@ class VideoTrimmerView @JvmOverloads constructor(
     defStyle: Int = 0
 ) : ConstraintLayout(context, attrs, defStyle), VideoTrimmerContract.View {
 
+    private var barBackgroundColor: Int? = null
+    private var barForegroundColor: Int? = null
+
+    private var leftBarBackgroundColor: Int? = null
+    private var leftBarForegroundColor: Int? = null
+
+    private var rightBarBackgroundColor: Int? = null
+    private var rightBarForegroundColor: Int? = null
+
     @DrawableRes
     private var leftBarRes: Int = R.drawable.trimmer_left_bar
+
     @DrawableRes
     private var rightBarRes: Int = R.drawable.trimmer_right_bar
 
@@ -36,6 +46,7 @@ class VideoTrimmerView @JvmOverloads constructor(
 
     @ColorInt
     private var borderColor: Int = Color.BLACK
+
     @ColorInt
     private var overlayColor: Int = Color.argb(120, 183, 191, 207)
 
@@ -55,22 +66,30 @@ class VideoTrimmerView @JvmOverloads constructor(
 
         val array = resources.obtainAttributes(attrs, R.styleable.VideoTrimmerView)
         try {
-            leftBarRes = array.getResourceId(R.styleable.VideoTrimmerView_vtv_window_left_bar, leftBarRes)
+            leftBarRes =
+                array.getResourceId(R.styleable.VideoTrimmerView_vtv_window_left_bar, leftBarRes)
             slidingWindowView.leftBarRes = leftBarRes
 
-            rightBarRes = array.getResourceId(R.styleable.VideoTrimmerView_vtv_window_right_bar, rightBarRes)
+            rightBarRes =
+                array.getResourceId(R.styleable.VideoTrimmerView_vtv_window_right_bar, rightBarRes)
             slidingWindowView.rightBarRes = rightBarRes
 
-            barWidth = array.getDimension(R.styleable.VideoTrimmerView_vtv_window_bar_width, barWidth)
+            barWidth =
+                array.getDimension(R.styleable.VideoTrimmerView_vtv_window_bar_width, barWidth)
             slidingWindowView.barWidth = barWidth
 
-            borderWidth = array.getDimension(R.styleable.VideoTrimmerView_vtv_window_border_width, borderWidth)
+            borderWidth = array.getDimension(
+                R.styleable.VideoTrimmerView_vtv_window_border_width,
+                borderWidth
+            )
             slidingWindowView.borderWidth = borderWidth
 
-            borderColor = array.getColor(R.styleable.VideoTrimmerView_vtv_window_border_color, borderColor)
+            borderColor =
+                array.getColor(R.styleable.VideoTrimmerView_vtv_window_border_color, borderColor)
             slidingWindowView.borderColor = borderColor
 
-            overlayColor = array.getColor(R.styleable.VideoTrimmerView_vtv_overlay_color, overlayColor)
+            overlayColor =
+                array.getColor(R.styleable.VideoTrimmerView_vtv_overlay_color, overlayColor)
             slidingWindowView.overlayColor = overlayColor
         } finally {
             array.recycle()
@@ -78,7 +97,61 @@ class VideoTrimmerView @JvmOverloads constructor(
     }
 
     private fun initViews() {
-        videoFrameListView.layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+        videoFrameListView.layoutManager =
+            LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+    }
+
+    fun setBarBackgroundColor(color: Int) {
+        barBackgroundColor = color
+        slidingWindowView.barBackgroundColor = color
+    }
+
+    fun setBarForegroundColor(color: Int) {
+        barForegroundColor = color
+        slidingWindowView.barForegroundColor = color
+    }
+
+
+    fun setLeftBarBackgroundColor(color: Int) {
+        leftBarBackgroundColor = color
+        slidingWindowView.leftBarBackgroundColor = color
+    }
+
+    fun setLeftBarForegroundColor(color: Int) {
+        leftBarForegroundColor = color
+        slidingWindowView.leftBarForegroundColor = color
+    }
+
+
+    fun setRightBarBackgroundColor(color: Int) {
+        rightBarBackgroundColor = color
+        slidingWindowView.rightBarBackgroundColor = color
+    }
+
+    fun setRightBarForegroundColor(color: Int) {
+        rightBarForegroundColor = color
+        slidingWindowView.rightBarForegroundColor = color
+    }
+
+
+    fun setBarWidth(width: Float) {
+        barWidth = dpToPx(context, width)
+        slidingWindowView.barWidth = barWidth
+    }
+
+    fun setBorderWidth(width: Float) {
+        borderWidth = dpToPx(context, width)
+        slidingWindowView.borderWidth = borderWidth
+    }
+
+    fun setBorderColor(color: Int) {
+        borderColor = color
+        slidingWindowView.borderColor = color
+    }
+
+    fun setOverLayColor(color: Int) {
+        overlayColor = color
+        slidingWindowView.overlayColor = color
     }
 
     /* -------------------------------------------------------------------------------------------*/

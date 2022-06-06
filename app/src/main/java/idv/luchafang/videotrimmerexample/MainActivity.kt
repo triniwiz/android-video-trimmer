@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.database.Cursor
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
@@ -46,6 +47,15 @@ class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChange
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        videoTrimmerView.setBorderColor(Color.RED)
+        videoTrimmerView.setBarBackgroundColor(Color.RED)
+
+        videoTrimmerView.setLeftBarBackgroundColor(Color.RED)
+        videoTrimmerView.setRightBarBackgroundColor(Color.RED)
+
+        videoTrimmerView.setBarBackgroundColor(Color.GREEN)
+        videoTrimmerView.setBarForegroundColor(Color.YELLOW)
 
         pickVideoBtn.setOnClickListener {
             Intent(Intent.ACTION_GET_CONTENT)

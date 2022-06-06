@@ -3,7 +3,12 @@ package idv.luchafang.videotrimmer.slidingwindow
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.PorterDuff
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.LayerDrawable
+import android.os.Build
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.MotionEvent.*
 import android.view.View
@@ -15,9 +20,9 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 
 internal class SlidingWindowView @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyle: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
 ) : View(context, attrs, defStyle) {
 
     private val HOLD_LEFT_BAR = 0
@@ -59,6 +64,50 @@ internal class SlidingWindowView @JvmOverloads constructor(
 
     @ColorInt
     var overlayColor: Int = 0
+        set(value) {
+            field = value
+            invalidate()
+        }
+
+    @ColorInt
+    var barBackgroundColor: Int = 0
+        set(value) {
+            field = value
+            invalidate()
+        }
+
+    @ColorInt
+    var barForegroundColor: Int = 0
+        set(value) {
+            field = value
+            invalidate()
+        }
+
+
+    @ColorInt
+    var leftBarBackgroundColor: Int = 0
+        set(value) {
+            field = value
+            invalidate()
+        }
+
+    @ColorInt
+    var leftBarForegroundColor: Int = 0
+        set(value) {
+            field = value
+            invalidate()
+        }
+
+
+    @ColorInt
+    var rightBarBackgroundColor: Int = 0
+        set(value) {
+            field = value
+            invalidate()
+        }
+
+    @ColorInt
+    var rightBarForegroundColor: Int = 0
         set(value) {
             field = value
             invalidate()
@@ -117,8 +166,37 @@ internal class SlidingWindowView @JvmOverloads constructor(
         drawOverlay(canvas)
     }
 
+
+    private fun overrideColor(index: Int, drawable: Drawable, color: Int) {
+        val ld = drawable as LayerDrawable
+        Log.d("com.test", "layers: " + ld.numberOfLayers)
+        val bg = ld.getDrawable(index)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            bg.setTint(color)
+        } else {
+            bg.setColorFilter(color, PorterDuff.Mode.SRC_ATOP)
+        }
+    }
+
     private fun drawLeftBar(canvas: Canvas) {
         ContextCompat.getDrawable(context, leftBarRes)?.apply {
+            if (leftBarRes == idv.luchafang.videotrimmer.R.drawable.trimmer_left_bar) {
+                if (leftBarBackgroundColor != 0) {
+                    overrideColor(0, this, leftBarBackgroundColor)
+                }
+                if (leftBarForegroundColor != 0) {
+                    overrideColor(1, this, leftBarForegroundColor)
+                }
+
+                if(barBackgroundColor != 0 ){
+                    overrideColor(0, this, barBackgroundColor)
+                }
+
+                if(barForegroundColor != 0 ){
+                    overrideColor(1, this, barForegroundColor)
+                }
+            }
             setBounds(0, 0, barWidth.roundToInt(), height)
 
             canvas.save()
@@ -132,6 +210,24 @@ internal class SlidingWindowView @JvmOverloads constructor(
 
     private fun drawRightBar(canvas: Canvas) {
         ContextCompat.getDrawable(context, rightBarRes)?.apply {
+
+            if (rightBarRes == idv.luchafang.videotrimmer.R.drawable.trimmer_right_bar) {
+                if (rightBarBackgroundColor != 0) {
+                    overrideColor(0, this, rightBarBackgroundColor)
+                }
+                if (rightBarForegroundColor != 0) {
+                    overrideColor(1, this, rightBarForegroundColor)
+                }
+
+                if(barBackgroundColor != 0 ){
+                    overrideColor(0, this, barBackgroundColor)
+                }
+
+                if(barForegroundColor != 0 ){
+                    overrideColor(1, this, barForegroundColor)
+                }
+            }
+
             setBounds(0, 0, barWidth.roundToInt(), height)
 
             canvas.save()
@@ -170,22 +266,22 @@ internal class SlidingWindowView @JvmOverloads constructor(
         // Left side overlay
         if (leftBarX > barWidth) {
             canvas.drawRect(
-                    barWidth,
-                    borderWidth,
-                    leftBarX,
-                    height - borderWidth,
-                    overlayPaint
+                barWidth,
+                borderWidth,
+                leftBarX,
+                height - borderWidth,
+                overlayPaint
             )
         }
 
         // Right side overlay
         if (rightBarX < width - 2 * barWidth) {
             canvas.drawRect(
-                    rightBarX + barWidth,
-                    borderWidth,
-                    width - barWidth,
-                    height - borderWidth,
-                    overlayPaint
+                rightBarX + barWidth,
+                borderWidth,
+                width - barWidth,
+                height - borderWidth,
+                overlayPaint
             )
         }
     }

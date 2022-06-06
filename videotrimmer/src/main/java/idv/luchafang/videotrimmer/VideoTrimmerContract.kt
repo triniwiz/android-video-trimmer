@@ -7,6 +7,7 @@ import java.io.File
 
 internal interface VideoTrimmerContract {
     interface View {
+
         fun getSlidingWindowWidth(): Int
         fun setupAdaptor(video: File, frames: List<Long>, frameWidth: Int)
         fun setupAdaptor(video: Uri, frames: List<Long>, frameWidth: Int)
