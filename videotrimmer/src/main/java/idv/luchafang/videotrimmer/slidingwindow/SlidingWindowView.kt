@@ -169,7 +169,6 @@ internal class SlidingWindowView @JvmOverloads constructor(
 
     private fun overrideColor(index: Int, drawable: Drawable, color: Int) {
         val ld = drawable as LayerDrawable
-        Log.d("com.test", "layers: " + ld.numberOfLayers)
         val bg = ld.getDrawable(index)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -189,11 +188,11 @@ internal class SlidingWindowView @JvmOverloads constructor(
                     overrideColor(1, this, leftBarForegroundColor)
                 }
 
-                if(barBackgroundColor != 0 ){
+                if (barBackgroundColor != 0) {
                     overrideColor(0, this, barBackgroundColor)
                 }
 
-                if(barForegroundColor != 0 ){
+                if (barForegroundColor != 0) {
                     overrideColor(1, this, barForegroundColor)
                 }
             }
@@ -219,11 +218,11 @@ internal class SlidingWindowView @JvmOverloads constructor(
                     overrideColor(1, this, rightBarForegroundColor)
                 }
 
-                if(barBackgroundColor != 0 ){
+                if (barBackgroundColor != 0) {
                     overrideColor(0, this, barBackgroundColor)
                 }
 
-                if(barForegroundColor != 0 ){
+                if (barForegroundColor != 0) {
                     overrideColor(1, this, barForegroundColor)
                 }
             }
