@@ -160,7 +160,6 @@ class VideoTrimmerView @JvmOverloads constructor(
         super.onAttachedToWindow()
         presenter = obtainVideoTrimmerPresenter()
             .apply { onViewAttached(this@VideoTrimmerView) }
-        onPresenterCreated()
     }
 
     override fun onDetachedFromWindow() {
@@ -173,14 +172,13 @@ class VideoTrimmerView @JvmOverloads constructor(
         presenter?.let {
             slidingWindowView.listener = presenter as SlidingWindowView.Listener
 
-            val horizontalMargin = (dpToPx(context, 11f) + barWidth).roundToInt()
+            val horizontalMargin = (dpToPx(context, 0f) + barWidth).roundToInt()
             val decoration = VideoFramesDecoration(horizontalMargin, overlayColor)
             val scrollListener = VideoFramesScrollListener(
                 horizontalMargin,
                 presenter as VideoFramesScrollListener.Callback
             )
 
-            videoFrameListView.addItemDecoration(decoration)
             videoFrameListView.addOnScrollListener(scrollListener)
         }
     }
@@ -224,6 +222,7 @@ class VideoTrimmerView @JvmOverloads constructor(
 
     fun show() {
         presenter?.show()
+        onPresenterCreated()
     }
 
     fun getTrimmerDraft(): TrimmerDraft? = presenter?.getTrimmerDraft()
