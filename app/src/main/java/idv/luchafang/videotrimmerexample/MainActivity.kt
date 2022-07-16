@@ -48,7 +48,8 @@ class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChange
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        videoTrimmerView.setBorderColor(Color.RED)
+        videoTrimmerView.setBorderWidth(10f)
+        videoTrimmerView.setBorderColor(Color.GREEN)
         videoTrimmerView.setBarBackgroundColor(Color.RED)
 
         videoTrimmerView.setLeftBarBackgroundColor(Color.RED)

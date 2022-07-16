@@ -44,7 +44,7 @@
     <idv.luchafang.videotrimmer.VideoTrimmerView
             android:id="@+id/videoTrimmerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="100dp"
             android:layout_marginBottom="70dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
