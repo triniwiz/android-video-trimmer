@@ -266,20 +266,21 @@ internal class SlidingWindowView @JvmOverloads constructor(
         if (leftBarX > barWidth) {
             canvas.drawRect(
                 barWidth,
-                borderWidth,
+                0F,
                 leftBarX,
-                height - borderWidth,
+                height.toFloat(),
                 overlayPaint
             )
         }
 
         // Right side overlay
         if (rightBarX < width - 2 * barWidth) {
+
             canvas.drawRect(
                 rightBarX + barWidth,
-                borderWidth,
+                0F,
                 width - barWidth,
-                height - borderWidth,
+                height.toFloat(),
                 overlayPaint
             )
         }

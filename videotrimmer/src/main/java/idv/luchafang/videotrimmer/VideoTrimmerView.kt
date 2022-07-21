@@ -122,7 +122,6 @@ class VideoTrimmerView @JvmOverloads constructor(
         slidingWindowView.leftBarForegroundColor = color
     }
 
-
     fun setRightBarBackgroundColor(color: Int) {
         rightBarBackgroundColor = color
         slidingWindowView.rightBarBackgroundColor = color
@@ -132,7 +131,6 @@ class VideoTrimmerView @JvmOverloads constructor(
         rightBarForegroundColor = color
         slidingWindowView.rightBarForegroundColor = color
     }
-
 
     fun setBarWidth(width: Float) {
         barWidth = dpToPx(context, width)
@@ -173,7 +171,7 @@ class VideoTrimmerView @JvmOverloads constructor(
         presenter?.let {
             slidingWindowView.listener = presenter as SlidingWindowView.Listener
 
-            val horizontalMargin = (dpToPx(context, 0f) + barWidth).roundToInt()
+            val horizontalMargin = (dpToPx(context, barWidth)).roundToInt()
             val scrollListener = VideoFramesScrollListener(
                 horizontalMargin,
                 presenter as VideoFramesScrollListener.Callback
