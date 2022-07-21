@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.Color
 import android.net.Uri
 import android.util.AttributeSet
-import android.widget.LinearLayout.HORIZONTAL
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -231,9 +230,9 @@ class VideoTrimmerView @JvmOverloads constructor(
     /* -------------------------------------------------------------------------------------------*/
     /* VideoTrimmerContract.View */
     override fun getSlidingWindowWidth(): Int {
-        val screenWidth = resources.displayMetrics.widthPixels
-        val margin = dpToPx(context, 11f)
-        return screenWidth - 2 * (margin + barWidth).roundToInt()
+       // val screenWidth = resources.displayMetrics.widthPixels
+        val margin = dpToPx(context, 10f)
+        return width - 2 * (margin + barWidth).roundToInt()
     }
 
     override fun setupAdaptor(video: File, frames: List<Long>, frameWidth: Int) {
