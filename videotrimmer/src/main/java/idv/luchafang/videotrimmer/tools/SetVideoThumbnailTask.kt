@@ -13,15 +13,18 @@ internal class SetVideoThumbnailTask constructor(
     var frameMs: Long = 0L,
     var fadeDuration: Long = 0L
 ) {
+    private val glide = Glide.with(view)
+
     private fun execute(file: Any?) {
         if (!(file is File || file is Uri)) {
             return
         }
+        glide.clear(view)
+
         val options = RequestOptions()
             .frame(frameMs * 1000)
             .centerCrop()
 
-        val glide = Glide.with(view)
         var request = glide
             .asBitmap()
             .load(file)
