@@ -6,6 +6,7 @@ import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -45,7 +46,7 @@ internal class VideoFramesAdaptor(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val imageView = ImageView(parent.context).apply {
-            layoutParams = ViewGroup.LayoutParams(frameWidth, MATCH_PARENT)
+            layoutParams = ViewGroup.LayoutParams(WRAP_CONTENT, MATCH_PARENT)
             scaleType = ImageView.ScaleType.CENTER_CROP
         }
 
