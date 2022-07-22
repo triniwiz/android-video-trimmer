@@ -5,7 +5,9 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.widget.ImageView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.MemoryCategory
 import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
@@ -25,6 +27,8 @@ internal class SetVideoThumbnailTask constructor(
         if (!(file is File || file is Uri)) {
             return
         }
+        Glide.get(view.context).setMemoryCategory(MemoryCategory.HIGH)
+
 
         val options = RequestOptions()
             .frame(frameMs * 1000)
@@ -32,6 +36,7 @@ internal class SetVideoThumbnailTask constructor(
 
         var request = glide
             .load(file)
+            .diskCacheStrategy(DiskCacheStrategy.DATA)
             .apply(options)
 
         if (fadeDuration > 0) {

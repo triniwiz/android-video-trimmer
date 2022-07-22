@@ -10,8 +10,10 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.ListPreloader
+import com.bumptech.glide.MemoryCategory
 import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.util.ViewPreloadSizeProvider
 import idv.luchafang.videotrimmer.tools.SetVideoThumbnailTask
@@ -77,8 +79,10 @@ internal class VideoFramesAdaptor(
             val options = RequestOptions()
                 .frame(item * 1000)
                 .centerCrop()
-
-            var request = Glide.with(context).asDrawable()
+            Glide.get(context).setMemoryCategory(MemoryCategory.HIGH)
+            var request = Glide.with(context)
+                .asDrawable()
+                .diskCacheStrategy(DiskCacheStrategy.DATA)
             request = if (videoUri != null) {
                 request.load(videoUri)
             } else {
