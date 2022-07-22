@@ -68,7 +68,11 @@ internal class SetVideoThumbnailTask constructor(
                     runCatching { retriever.release() }
                 }
 
-                glide.load(bitmap).into(view)
+                bitmap?.let {
+                    view.setImageBitmap(bitmap)
+                } ?: run {
+                    view.setImageDrawable(null)
+                }
 
                 return false
             }
