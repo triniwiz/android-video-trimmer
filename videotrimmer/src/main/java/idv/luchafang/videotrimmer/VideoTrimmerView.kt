@@ -1,5 +1,6 @@
 package idv.luchafang.videotrimmer
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.net.Uri
@@ -10,6 +11,9 @@ import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
+import com.bumptech.glide.util.ViewPreloadSizeProvider
 import idv.luchafang.videotrimmer.data.TrimmerDraft
 import idv.luchafang.videotrimmer.slidingwindow.SlidingWindowView
 import idv.luchafang.videotrimmer.tools.dpToPx
@@ -19,8 +23,9 @@ import kotlinx.android.synthetic.main.layout_video_trimmer.view.*
 import java.io.File
 import kotlin.math.roundToInt
 
+
 inline fun View.afterMeasured(crossinline f: View.() -> Unit) {
-    addOnLayoutChangeListener(object: View.OnLayoutChangeListener {
+    addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
         override fun onLayoutChange(
             v: View?,
             left: Int,
@@ -79,6 +84,7 @@ class VideoTrimmerView @JvmOverloads constructor(
     private var presenter: VideoTrimmerContract.Presenter? = null
     private var adaptor: VideoFramesAdaptor? = null
 
+
     /* -------------------------------------------------------------------------------------------*/
     /* Initialize */
     init {
@@ -123,7 +129,13 @@ class VideoTrimmerView @JvmOverloads constructor(
     }
 
     private fun initViews() {
-        videoFrameListView.isNestedScrollingEnabled = true
+
+        videoFrameListView.setItemViewCacheSize(0)
+        videoFrameListView.addRecyclerListener {
+            if (it is VideoFramesAdaptor.ViewHolder) {
+                it.runner.glide.clear(it.runner.view)
+            }
+        }
         videoFrameListView.layoutManager =
             LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
     }
@@ -257,6 +269,7 @@ class VideoTrimmerView @JvmOverloads constructor(
 
     /* -------------------------------------------------------------------------------------------*/
     /* VideoTrimmerContract.View */
+
     override fun getSlidingWindowWidth(): Int {
         // val screenWidth = resources.displayMetrics.widthPixels
         val margin = dpToPx(context, 10f)
@@ -264,14 +277,16 @@ class VideoTrimmerView @JvmOverloads constructor(
     }
 
     override fun setupAdaptor(video: File, frames: List<Long>, frameWidth: Int) {
-        adaptor = VideoFramesAdaptor(video, frames, frameWidth).also {
+        adaptor = VideoFramesAdaptor(video, frames, frameWidth, null, context).also {
             videoFrameListView.adapter = it
+            videoFrameListView.addOnScrollListener(it.preloader!!)
         }
     }
 
     override fun setupAdaptor(video: Uri, frames: List<Long>, frameWidth: Int) {
-        adaptor = VideoFramesAdaptor(null, frames, frameWidth, video).also {
+        adaptor = VideoFramesAdaptor(null, frames, frameWidth, video, context).also {
             videoFrameListView.adapter = it
+            videoFrameListView.addOnScrollListener(it.preloader!!)
         }
     }
 

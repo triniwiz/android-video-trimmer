@@ -19,7 +19,7 @@ internal class SetVideoThumbnailTask constructor(
     var frameMs: Long = 0L,
     var fadeDuration: Long = 0L
 ) {
-    private val glide = Glide.with(view)
+    val glide = Glide.with(view)
 
     private fun execute(file: Any?) {
         if (!(file is File || file is Uri)) {
@@ -39,54 +39,7 @@ internal class SetVideoThumbnailTask constructor(
                 request.transition(DrawableTransitionOptions.withCrossFade((fadeDuration / 1000).toInt()))
         }
 
-        request.addListener(object : RequestListener<Drawable> {
-            override fun onLoadFailed(
-                e: GlideException?,
-                model: Any?,
-                target: Target<Drawable>?,
-                isFirstResource: Boolean
-            ): Boolean {
-
-
-                val retriever = MediaMetadataRetriever()
-                val context = view.context
-                val bitmap = try {
-
-                    if (file is File) {
-                        retriever.setDataSource(file.absolutePath)
-                    }
-
-                    if (file is Uri) {
-                        retriever.setDataSource(context, file)
-                    }
-
-                    val timeUs = if (frameMs == 0L) -1 else frameMs * 1000
-                    retriever.getFrameAtTime(timeUs)
-                } catch (e: Exception) {
-                    null
-                } finally {
-                    runCatching { retriever.release() }
-                }
-
-                bitmap?.let {
-                    view.setImageBitmap(bitmap)
-                } ?: run {
-                    view.setImageDrawable(null)
-                }
-
-                return false
-            }
-
-            override fun onResourceReady(
-                resource: Drawable?,
-                model: Any?,
-                target: Target<Drawable>?,
-                dataSource: DataSource?,
-                isFirstResource: Boolean
-            ): Boolean {
-                return false
-            }
-        })
+        request
             .into(view)
     }
 
