@@ -123,6 +123,7 @@ class VideoTrimmerView @JvmOverloads constructor(
     }
 
     private fun initViews() {
+        videoFrameListView.isNestedScrollingEnabled = true
         videoFrameListView.layoutManager =
             LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
     }
