@@ -1,9 +1,8 @@
 package idv.luchafang.videotrimmer.tools
 import android.net.Uri
-import android.util.Log
 import android.widget.ImageView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import java.io.File
 
@@ -26,13 +25,12 @@ internal class SetVideoThumbnailTask constructor(
             .centerCrop()
 
         var request = glide
-            .asBitmap()
             .load(file)
             .apply(options)
 
         if (fadeDuration > 0) {
             request =
-                request.transition(BitmapTransitionOptions.withCrossFade((fadeDuration / 1000).toInt()))
+                request.transition(DrawableTransitionOptions.withCrossFade((fadeDuration / 1000).toInt()))
         }
         request.into(view)
     }
