@@ -2,6 +2,7 @@ package idv.luchafang.videotrimmer.videoframe
 
 import android.net.Uri
 import android.os.AsyncTask
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -27,18 +28,19 @@ internal class VideoFramesAdaptor(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val view = holder.itemView as ImageView
         val frame = frames[position]
 
-        val task = SetVideoThumbnailTask(view, frame)
+        holder.runner.frameMs = frame
         if (videoUri != null) {
-            task.execute(videoUri)
+            holder.runner.execute(videoUri)
         } else {
-            task.execute(video)
+            holder.runner.execute(video)
         }
     }
 
     override fun getItemCount(): Int = frames.size
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var runner = SetVideoThumbnailTask(itemView as ImageView)
+    }
 }

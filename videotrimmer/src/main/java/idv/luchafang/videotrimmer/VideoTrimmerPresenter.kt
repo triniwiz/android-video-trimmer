@@ -1,6 +1,7 @@
 package idv.luchafang.videotrimmer
 
 import android.net.Uri
+import android.view.View
 import idv.luchafang.videotrimmer.data.TrimmerDraft
 import idv.luchafang.videotrimmer.slidingwindow.SlidingWindowView
 import idv.luchafang.videotrimmer.tools.extractVideoLength
@@ -87,7 +88,20 @@ internal class VideoTrimmerPresenter : VideoTrimmerContract.Presenter,
         if (!isValidState()) {
             return
         }
+
+        val windowWidth = view?.getSlidingWindowWidth() ?: return
+
+
+        if (windowWidth <= 0){
+            (view as View?)?.let {
+                it.afterMeasured{
+                    show()
+                }
+            }
+        }
+
         val video = this.video ?: this.videoUri ?: return
+
         videoLength = if (video is Uri) {
             val context = view?.getContext() ?: return
             extractVideoLength(context, video)
@@ -118,7 +132,6 @@ internal class VideoTrimmerPresenter : VideoTrimmerContract.Presenter,
             }
         }
 
-        val windowWidth = view?.getSlidingWindowWidth() ?: return
         val frameWidth = windowWidth.toFloat() / frameCountInWindow
 
         rawStartMillis = 0L

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Color
 import android.net.Uri
 import android.util.AttributeSet
+import android.view.View
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -13,11 +14,37 @@ import idv.luchafang.videotrimmer.data.TrimmerDraft
 import idv.luchafang.videotrimmer.slidingwindow.SlidingWindowView
 import idv.luchafang.videotrimmer.tools.dpToPx
 import idv.luchafang.videotrimmer.videoframe.VideoFramesAdaptor
-import idv.luchafang.videotrimmer.videoframe.VideoFramesDecoration
 import idv.luchafang.videotrimmer.videoframe.VideoFramesScrollListener
 import kotlinx.android.synthetic.main.layout_video_trimmer.view.*
 import java.io.File
 import kotlin.math.roundToInt
+
+inline fun View.afterMeasured(crossinline f: View.() -> Unit) {
+    addOnLayoutChangeListener(object: View.OnLayoutChangeListener {
+        override fun onLayoutChange(
+            v: View?,
+            left: Int,
+            top: Int,
+            right: Int,
+            bottom: Int,
+            oldLeft: Int,
+            oldTop: Int,
+            oldRight: Int,
+            oldBottom: Int
+        ) {
+            val oldWidth = oldRight - oldLeft
+            val oldHeight = oldBottom - oldTop
+            val width = right - left
+            val height = bottom - top
+
+            if (oldWidth == 0 && oldHeight == 0 && width > 0 && height > 0) {
+                f()
+                removeOnLayoutChangeListener(this)
+            }
+        }
+    })
+}
+
 
 class VideoTrimmerView @JvmOverloads constructor(
     context: Context,
@@ -230,7 +257,7 @@ class VideoTrimmerView @JvmOverloads constructor(
     /* -------------------------------------------------------------------------------------------*/
     /* VideoTrimmerContract.View */
     override fun getSlidingWindowWidth(): Int {
-       // val screenWidth = resources.displayMetrics.widthPixels
+        // val screenWidth = resources.displayMetrics.widthPixels
         val margin = dpToPx(context, 10f)
         return width - 2 * (margin + barWidth).roundToInt()
     }
