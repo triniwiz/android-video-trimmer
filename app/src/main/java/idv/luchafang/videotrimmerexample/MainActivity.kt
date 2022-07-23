@@ -1,5 +1,6 @@
 package idv.luchafang.videotrimmerexample
 
+//import kotlinx.android.synthetic.main.activity_main.*
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
@@ -9,17 +10,21 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.google.android.exoplayer2.ExoPlayerFactory
-import com.google.android.exoplayer2.SimpleExoPlayer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.exoplayer2.source.ClippingMediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import idv.luchafang.videotrimmer.VideoTrimmerView
-import kotlinx.android.synthetic.main.activity_main.*
-import java.io.File
+import java.util.*
 
 
 class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChangedListener {
@@ -27,12 +32,68 @@ class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChange
     private val REQ_PICK_VIDEO = 100
     private val REQ_PERMISSION = 200
 
-    private val player: SimpleExoPlayer by lazy {
-        ExoPlayerFactory.newSimpleInstance(this).also {
-            it.repeatMode = SimpleExoPlayer.REPEAT_MODE_ALL
-            playerView.player = it
+//    private val player: SimpleExoPlayer by lazy {
+//        ExoPlayerFactory.newSimpleInstance(this).also {
+//            it.repeatMode = SimpleExoPlayer.REPEAT_MODE_ALL
+//            playerView.player = it
+//        }
+//    }
+
+
+    internal class Adapter(
+        var activity: MainActivity
+    ) : RecyclerView.Adapter<Adapter.ViewHolder>() {
+        var items = ArrayList<Uri>()
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val inflater = LayoutInflater.from(parent.context)
+            val trimmer = inflater.inflate(R.layout.item, parent, false)
+            return ViewHolder(trimmer)
         }
+
+
+        fun handleVideo(videoTrimmerView: VideoTrimmerView, item: Uri) {
+            videoTrimmerView.setBorderWidth(10f)
+                .setBorderColor(Color.GREEN)
+                .setBarBackgroundColor(Color.RED)
+                .setLeftBarBackgroundColor(Color.RED)
+                .setRightBarBackgroundColor(Color.RED)
+                .setBarBackgroundColor(Color.GREEN)
+                .setBarForegroundColor(Color.YELLOW)
+                .setVideo(item)
+                .setMinDuration(1_000)
+                .setFrameCountInWindow(8)
+                .setExtraDragSpace(activity.dpToPx(2f))
+                .setOnSelectedRangeChangedListener(activity)
+                .show()
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val item = items[position]
+            val itemView = holder.itemView
+            val videoTrimmerView = itemView.findViewById<VideoTrimmerView>(R.id.videoTrimmerView)
+
+            if (videoTrimmerView.isAttachedToWindow) {
+                handleVideo(videoTrimmerView, item)
+            } else {
+                videoTrimmerView.addOnAttachStateChangeListener(object :
+                    View.OnAttachStateChangeListener {
+                    override fun onViewAttachedToWindow(view: View) {
+                        handleVideo(videoTrimmerView, item)
+                    }
+
+                    override fun onViewDetachedFromWindow(view: View) {
+                        videoTrimmerView.removeOnAttachStateChangeListener(this)
+                    }
+                })
+            }
+        }
+
+        override fun getItemCount(): Int = items.size
+
+        class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
     }
+
 
     private val dataSourceFactory: DataSource.Factory by lazy {
         DefaultDataSourceFactory(this, "VideoTrimmer")
@@ -42,30 +103,38 @@ class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChange
 
     private var videoUri: Uri? = null
 
+    private var adapter: Adapter? = null
+
+    private var layoutManager: LinearLayoutManager? = null
+
+    private var pickVideoBtn: Button? = null
+
+    private var listView: RecyclerView? = null
+
     /* -------------------------------------------------------------------------------------------*/
     /* Activity */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        videoTrimmerView.setBorderWidth(10f)
-        videoTrimmerView.setBorderColor(Color.GREEN)
-        videoTrimmerView.setBarBackgroundColor(Color.RED)
+        pickVideoBtn = findViewById(R.id.pickVideoBtn)
+        listView = findViewById(R.id.listView)
 
-        videoTrimmerView.setLeftBarBackgroundColor(Color.RED)
-        videoTrimmerView.setRightBarBackgroundColor(Color.RED)
+        adapter = Adapter(this)
 
-        videoTrimmerView.setBarBackgroundColor(Color.GREEN)
-        videoTrimmerView.setBarForegroundColor(Color.YELLOW)
 
-        pickVideoBtn.setOnClickListener {
-            Intent(Intent.ACTION_GET_CONTENT)
+        pickVideoBtn?.setOnClickListener {
+            Intent(Intent.ACTION_OPEN_DOCUMENT)
                 .apply {
                     type = "video/*"
                 }
                 .also { startActivityForResult(it, REQ_PICK_VIDEO) }
 
         }
+
+        layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
+        listView?.layoutManager = layoutManager
+        listView?.adapter = adapter
 //        pickVideoBtn.setOnClickListener {
 //            displayTrimmerView(
 //                File(filesDir, "Firefox.mp4").absolutePath
@@ -81,10 +150,19 @@ class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChange
                 if (resultCode == Activity.RESULT_OK) {
                     //videoPath = getRealPathFromMediaData(data?.data)
                     // displayTrimmerView(videoPath)
-                    try {
-                        videoUri = data?.data
-                        displayTrimmerView(videoUri!!)
-                    } catch (e: Exception) {
+
+                    data?.data?.let {
+                        grantUriPermission(
+                            packageName,
+                            it,
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        )
+
+                        try {
+                            videoUri = it
+                            displayTrimmerView(videoUri!!)
+                        } catch (e: Exception) {
+                        }
                     }
                 }
             }
@@ -116,7 +194,7 @@ class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChange
     /* -------------------------------------------------------------------------------------------*/
     /* VideoTrimmerView.OnSelectedRangeChangedListener */
     override fun onSelectRangeStart() {
-        player.playWhenReady = false
+        //player.playWhenReady = false
     }
 
     override fun onSelectRange(startMillis: Long, endMillis: Long) {
@@ -126,9 +204,9 @@ class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChange
     override fun onSelectRangeEnd(startMillis: Long, endMillis: Long) {
         showDuration(startMillis, endMillis)
         if (videoUri != null) {
-            playVideo(videoUri, startMillis, endMillis)
+            // playVideo(videoUri, startMillis, endMillis)
         } else {
-            playVideo(videoPath, startMillis, endMillis)
+            // playVideo(videoPath, startMillis, endMillis)
         }
 
 
@@ -137,25 +215,29 @@ class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChange
     /* -------------------------------------------------------------------------------------------*/
     /* VideoTrimmer */
     private fun displayTrimmerView(path: String) {
-        videoTrimmerView
-            .setVideo(File(path))
-            .setMaxDuration(60_000)
-            .setMinDuration(3_000)
-            .setFrameCountInWindow(8)
-            .setExtraDragSpace(dpToPx(2f))
-            .setOnSelectedRangeChangedListener(this)
-            .show()
+//        videoTrimmerView
+//            .setVideo(File(path))
+//            .setMaxDuration(60_000)
+//            .setMinDuration(3_000)
+//            .setFrameCountInWindow(8)
+//            .setExtraDragSpace(dpToPx(2f))
+//            .setOnSelectedRangeChangedListener(this)
+//            .show()
     }
 
     private fun displayTrimmerView(uri: Uri) {
-        videoTrimmerView
-            .setVideo(uri)
-            .setMaxDuration(60_000)
-            .setMinDuration(3_000)
-            .setFrameCountInWindow(8)
-            .setExtraDragSpace(dpToPx(2f))
-            .setOnSelectedRangeChangedListener(this)
-            .show()
+        for (i in 0..9) {
+            adapter?.items?.add(uri)
+            adapter?.notifyItemInserted(i)
+        }
+//        videoTrimmerView
+//            .setVideo(uri)
+//            .setMaxDuration(60_000)
+//            .setMinDuration(3_000)
+//            .setFrameCountInWindow(8)
+//            .setExtraDragSpace(dpToPx(2f))
+//            .setOnSelectedRangeChangedListener(this)
+//            .show()
     }
 
     /* -------------------------------------------------------------------------------------------*/
@@ -173,8 +255,8 @@ class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChange
                 )
             }
 
-        player.playWhenReady = true
-        player.prepare(source)
+        //   player.playWhenReady = true
+        //  player.prepare(source)
     }
 
 
@@ -191,8 +273,8 @@ class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChange
                 )
             }
 
-        player.playWhenReady = true
-        player.prepare(source)
+        //  player.playWhenReady = true
+        // player.prepare(source)
     }
 
     /* -------------------------------------------------------------------------------------------*/
@@ -219,10 +301,10 @@ class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChange
 
     private fun showDuration(startMillis: Long, endMillis: Long) {
         val duration = (endMillis - startMillis) / 1000L
-        durationView.text = "$duration seconds selected"
+        //  durationView.text = "$duration seconds selected"
     }
 
-    private fun dpToPx(dp: Float): Float {
+    fun dpToPx(dp: Float): Float {
         val density = resources.displayMetrics.density
         return dp * density
     }
