@@ -2,6 +2,7 @@ package idv.luchafang.videotrimmer.videoframe
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
@@ -17,8 +18,6 @@ internal class VideoFramesAdaptor(
     private val videoUri: Uri? = null,
     private val context: Context? = null
 ) : RecyclerView.Adapter<VideoFramesAdaptor.ViewHolder>() {
-
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val imageView = ImageView(parent.context).apply {

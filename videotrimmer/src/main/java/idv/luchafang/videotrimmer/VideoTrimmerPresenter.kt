@@ -98,6 +98,7 @@ internal class VideoTrimmerPresenter : VideoTrimmerContract.Presenter,
                     show()
                 }
             }
+            return
         }
 
         val video = this.video ?: this.videoUri ?: return

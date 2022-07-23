@@ -9,98 +9,43 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.widget.ImageView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions
+import com.bumptech.glide.request.RequestOptions
 import java.io.File
 import java.lang.ref.WeakReference
 import java.util.concurrent.Executors
 
 internal class SetVideoThumbnailTask constructor(
-    view: ImageView,
+    val view: ImageView,
     var frameMs: Long = 0L,
     private val size: Int = 512,
     private val fadeDuration: Long = 0L
 ) {
+    private var glide = Glide.with(view)
+    private fun handleFile(file: Any?) {
+        glide.clear(view)
+        if (file is Uri || file is File) {
+            val options = RequestOptions().frame(frameMs)
+            var request = glide
+                .asBitmap()
+                .apply(options)
+                .load(file)
 
-    private val viewRef = WeakReference<ImageView>(view)
-    private val executor = Executors.newCachedThreadPool()
-
-    private var currentTask: java.util.concurrent.Future<*>? = null
-
-    private var handler = Handler(Looper.getMainLooper())
-
-    private fun process(image: Any?) {
-        currentTask?.let {
-            if (!it.isCancelled || !it.isDone) {
-                it.cancel(true)
-                currentTask = null
-            }
-        }
-
-        currentTask = executor.submit {
-            val view = viewRef.get() ?: return@submit
-
-            val retriever = MediaMetadataRetriever()
-
-            val bitmap = try {
-                if (image is String) {
-                    retriever.setDataSource(image)
-                }
-
-                if (image is Uri) {
-                    retriever.setDataSource(view.context, image)
-                }
-
-
-                val timeUs = if (frameMs == 0L) -1 else frameMs * 1000
-                val bitmap = retriever.getFrameAtTime(timeUs)
-                scaleBitmap(bitmap!!, size)
-            } catch (e: Exception) {
-                null
-            } finally {
-                runCatching { retriever.release() }
+            if (fadeDuration > 0) {
+                request =
+                    request.transition(BitmapTransitionOptions.withCrossFade((fadeDuration / 1000).toInt()))
             }
 
-            postToMain(view, bitmap)
-
-        }
-    }
-
-    private fun postToMain(view: ImageView, bitmap: Bitmap?) {
-        bitmap?.let {
-            handler.post {
-                if (fadeDuration == 0L) {
-                    view.setImageBitmap(it)
-                    return@post
-                }
-
-                val fadeOut = animateAlpha(
-                    view,
-                    1f,
-                    0f,
-                    fadeDuration,
-                    autoPlay = false,
-                    listener = fadeOutEndListener(view, bitmap)
-                )
-                val fadeIn = animateAlpha(view, 0f, 1f, fadeDuration, autoPlay = false)
-
-                val animators = AnimatorSet()
-                animators.playSequentially(fadeOut, fadeIn)
-                animators.start()
-            }
+            request.into(view)
         }
     }
 
     fun execute(file: File?) {
-        process(file?.path)
+        handleFile(file?.path)
     }
 
     fun execute(uri: Uri?) {
-        process(uri)
+        handleFile(uri)
     }
-
-    private fun fadeOutEndListener(view: ImageView, result: Bitmap): AnimatorListenerAdapter =
-        object : AnimatorListenerAdapter() {
-            override fun onAnimationEnd(animation: Animator?) {
-                view.setImageBitmap(result)
-            }
-        }
 }

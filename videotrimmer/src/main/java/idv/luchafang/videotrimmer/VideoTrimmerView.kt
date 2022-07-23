@@ -137,55 +137,65 @@ class VideoTrimmerView @JvmOverloads constructor(
             LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
     }
 
-    fun setBarBackgroundColor(color: Int) {
+    fun setBarBackgroundColor(color: Int): VideoTrimmerView {
         barBackgroundColor = color
         slidingWindowView.barBackgroundColor = color
+        return this
     }
 
-    fun setBarForegroundColor(color: Int) {
+    fun setBarForegroundColor(color: Int): VideoTrimmerView {
         barForegroundColor = color
         slidingWindowView.barForegroundColor = color
+        return this
     }
 
 
-    fun setLeftBarBackgroundColor(color: Int) {
+    fun setLeftBarBackgroundColor(color: Int): VideoTrimmerView {
         leftBarBackgroundColor = color
         slidingWindowView.leftBarBackgroundColor = color
+        return this
     }
 
-    fun setLeftBarForegroundColor(color: Int) {
+    fun setLeftBarForegroundColor(color: Int): VideoTrimmerView {
         leftBarForegroundColor = color
         slidingWindowView.leftBarForegroundColor = color
+        return this
     }
 
-    fun setRightBarBackgroundColor(color: Int) {
+    fun setRightBarBackgroundColor(color: Int): VideoTrimmerView {
         rightBarBackgroundColor = color
         slidingWindowView.rightBarBackgroundColor = color
+        return this
     }
 
-    fun setRightBarForegroundColor(color: Int) {
+    fun setRightBarForegroundColor(color: Int): VideoTrimmerView {
         rightBarForegroundColor = color
         slidingWindowView.rightBarForegroundColor = color
+        return this
     }
 
-    fun setBarWidth(width: Float) {
+    fun setBarWidth(width: Float): VideoTrimmerView {
         barWidth = dpToPx(context, width)
         slidingWindowView.barWidth = barWidth
+        return this
     }
 
-    fun setBorderWidth(width: Float) {
+    fun setBorderWidth(width: Float): VideoTrimmerView {
         borderWidth = dpToPx(context, width)
         slidingWindowView.borderWidth = borderWidth
+        return this
     }
 
-    fun setBorderColor(color: Int) {
+    fun setBorderColor(color: Int): VideoTrimmerView {
         borderColor = color
         slidingWindowView.borderColor = color
+        return this
     }
 
-    fun setOverLayColor(color: Int) {
+    fun setOverLayColor(color: Int): VideoTrimmerView {
         overlayColor = color
         slidingWindowView.overlayColor = color
+        return this
     }
 
     /* -------------------------------------------------------------------------------------------*/
