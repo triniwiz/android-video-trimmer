@@ -11,9 +11,6 @@ import androidx.annotation.DrawableRes
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.integration.recyclerview.RecyclerViewPreloader
-import com.bumptech.glide.util.ViewPreloadSizeProvider
 import idv.luchafang.videotrimmer.data.TrimmerDraft
 import idv.luchafang.videotrimmer.slidingwindow.SlidingWindowView
 import idv.luchafang.videotrimmer.tools.dpToPx
@@ -130,12 +127,12 @@ class VideoTrimmerView @JvmOverloads constructor(
 
     private fun initViews() {
 
-        videoFrameListView.setItemViewCacheSize(0)
-        videoFrameListView.addRecyclerListener {
-            if (it is VideoFramesAdaptor.ViewHolder) {
-                it.runner.glide.clear(it.runner.view)
-            }
-        }
+//        videoFrameListView.setItemViewCacheSize(0)
+//        videoFrameListView.addRecyclerListener {
+//            if (it is VideoFramesAdaptor.ViewHolder) {
+//                it.runner.glide.clear(it.runner.view)
+//            }
+//        }
         videoFrameListView.layoutManager =
             LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
     }
@@ -279,14 +276,12 @@ class VideoTrimmerView @JvmOverloads constructor(
     override fun setupAdaptor(video: File, frames: List<Long>, frameWidth: Int) {
         adaptor = VideoFramesAdaptor(video, frames, frameWidth, null, context).also {
             videoFrameListView.adapter = it
-            videoFrameListView.addOnScrollListener(it.preloader!!)
         }
     }
 
     override fun setupAdaptor(video: Uri, frames: List<Long>, frameWidth: Int) {
         adaptor = VideoFramesAdaptor(null, frames, frameWidth, video, context).also {
             videoFrameListView.adapter = it
-            videoFrameListView.addOnScrollListener(it.preloader!!)
         }
     }
 
