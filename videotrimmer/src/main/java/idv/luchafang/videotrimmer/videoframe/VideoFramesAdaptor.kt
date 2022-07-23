@@ -2,7 +2,6 @@ package idv.luchafang.videotrimmer.videoframe
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT

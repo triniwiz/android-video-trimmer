@@ -10,7 +10,6 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -135,6 +134,7 @@ class MainActivity : AppCompatActivity(), VideoTrimmerView.OnSelectedRangeChange
         layoutManager = LinearLayoutManager(this, RecyclerView.VERTICAL, false)
         listView?.layoutManager = layoutManager
         listView?.adapter = adapter
+        /// listView?.setItemViewCacheSize(0)
 //        pickVideoBtn.setOnClickListener {
 //            displayTrimmerView(
 //                File(filesDir, "Firefox.mp4").absolutePath

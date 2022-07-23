@@ -126,13 +126,6 @@ class VideoTrimmerView @JvmOverloads constructor(
     }
 
     private fun initViews() {
-
-//        videoFrameListView.setItemViewCacheSize(0)
-//        videoFrameListView.addRecyclerListener {
-//            if (it is VideoFramesAdaptor.ViewHolder) {
-//                it.runner.glide.clear(it.runner.view)
-//            }
-//        }
         videoFrameListView.layoutManager =
             LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
     }
