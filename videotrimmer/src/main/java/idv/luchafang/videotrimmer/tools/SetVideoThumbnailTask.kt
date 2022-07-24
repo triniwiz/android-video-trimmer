@@ -14,7 +14,6 @@ internal class SetVideoThumbnailTask constructor(
 ) {
     private var glide = Glide.with(view)
     private fun handleFile(file: Any?) {
-        glide.clear(view)
         if (file is Uri || file is File) {
             val options = RequestOptions().frame(frameMs)
             var request = glide

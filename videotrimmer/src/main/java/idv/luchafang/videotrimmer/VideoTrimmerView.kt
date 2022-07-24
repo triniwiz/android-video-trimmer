@@ -277,13 +277,13 @@ class VideoTrimmerView @JvmOverloads constructor(
     }
 
     override fun setupAdaptor(video: File, frames: List<Long>, frameWidth: Int) {
-        adaptor = VideoFramesAdaptor(video, frames, frameWidth, null, context).also {
+        adaptor = VideoFramesAdaptor(video, frames, frameWidth).also {
             videoFrameListView.adapter = it
         }
     }
 
     override fun setupAdaptor(video: Uri, frames: List<Long>, frameWidth: Int) {
-        adaptor = VideoFramesAdaptor(null, frames, frameWidth, video, context).also {
+        adaptor = VideoFramesAdaptor(null, frames, frameWidth, video).also {
             videoFrameListView.adapter = it
         }
     }
