@@ -78,8 +78,10 @@ class VideoTrimmerView @JvmOverloads constructor(
     @ColorInt
     private var overlayColor: Int = Color.argb(120, 183, 191, 207)
 
-    private var presenter: VideoTrimmerContract.Presenter? = null
+    private var presenter: VideoTrimmerContract.Presenter = obtainVideoTrimmerPresenter()
     private var adaptor: VideoFramesAdaptor? = null
+
+    private var scrollListener: VideoFramesScrollListener? = null
 
 
     /* -------------------------------------------------------------------------------------------*/
@@ -88,6 +90,11 @@ class VideoTrimmerView @JvmOverloads constructor(
         inflate(context, R.layout.layout_video_trimmer, this)
         obtainAttributes(attrs)
         initViews()
+
+        presenter = obtainVideoTrimmerPresenter()
+        presenter.onViewAttached(this)
+        slidingWindowView.listener = presenter as SlidingWindowView.Listener
+        onPresenterCreated()
     }
 
     private fun obtainAttributes(attrs: AttributeSet?) {
@@ -192,63 +199,47 @@ class VideoTrimmerView @JvmOverloads constructor(
     }
 
     /* -------------------------------------------------------------------------------------------*/
-    /* Attach / Detach */
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        presenter = obtainVideoTrimmerPresenter()
-            .apply { onViewAttached(this@VideoTrimmerView) }
-        onPresenterCreated()
-    }
 
-    override fun onDetachedFromWindow() {
-        super.onDetachedFromWindow()
-        presenter?.onViewDetached()
-        presenter = null
-    }
 
     private fun onPresenterCreated() {
-        presenter?.let {
-            slidingWindowView.listener = presenter as SlidingWindowView.Listener
+        val horizontalMargin = (dpToPx(context, barWidth)).roundToInt()
+        scrollListener = VideoFramesScrollListener(
+            horizontalMargin,
+            presenter as VideoFramesScrollListener.Callback
+        )
 
-            val horizontalMargin = (dpToPx(context, barWidth)).roundToInt()
-            val scrollListener = VideoFramesScrollListener(
-                horizontalMargin,
-                presenter as VideoFramesScrollListener.Callback
-            )
-
-            videoFrameListView.addOnScrollListener(scrollListener)
-        }
+        videoFrameListView.addOnScrollListener(scrollListener!!)
     }
 
     /* -------------------------------------------------------------------------------------------*/
     /* Public APIs */
     fun setVideo(video: File): VideoTrimmerView {
-        presenter?.setVideo(video)
+        presenter.setVideo(video)
         return this
     }
 
     fun setVideo(video: Uri): VideoTrimmerView {
-        presenter?.setVideo(video)
+        presenter.setVideo(video)
         return this
     }
 
     fun setMaxDuration(millis: Long): VideoTrimmerView {
-        presenter?.setMaxDuration(millis)
+        presenter.setMaxDuration(millis)
         return this
     }
 
     fun setMinDuration(millis: Long): VideoTrimmerView {
-        presenter?.setMinDuration(millis)
+        presenter.setMinDuration(millis)
         return this
     }
 
     fun setFrameCountInWindow(count: Int): VideoTrimmerView {
-        presenter?.setFrameCountInWindow(count)
+        presenter.setFrameCountInWindow(count)
         return this
     }
 
     fun setOnSelectedRangeChangedListener(listener: OnSelectedRangeChangedListener): VideoTrimmerView {
-        presenter?.setOnSelectedRangeChangedListener(listener)
+        presenter.setOnSelectedRangeChangedListener(listener)
         return this
     }
 
@@ -257,14 +248,10 @@ class VideoTrimmerView @JvmOverloads constructor(
         return this
     }
 
-    fun show() {
-        presenter?.show()
-    }
-
-    fun getTrimmerDraft(): TrimmerDraft? = presenter?.getTrimmerDraft()
+    fun getTrimmerDraft(): TrimmerDraft = presenter.getTrimmerDraft()
 
     fun restoreTrimmer(draft: TrimmerDraft) {
-        presenter?.restoreTrimmer(draft)
+        presenter.restoreTrimmer(draft)
     }
 
     /* -------------------------------------------------------------------------------------------*/

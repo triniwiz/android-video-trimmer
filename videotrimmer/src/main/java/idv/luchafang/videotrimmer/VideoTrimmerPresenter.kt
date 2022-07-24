@@ -55,10 +55,12 @@ internal class VideoTrimmerPresenter : VideoTrimmerContract.Presenter,
     /* Builder */
     override fun setVideo(video: File) {
         this.video = video
+        show()
     }
 
     override fun setVideo(video: Uri) {
         this.videoUri = video
+        show()
     }
 
     override fun setMaxDuration(millis: Long) {
