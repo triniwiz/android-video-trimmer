@@ -1,9 +1,14 @@
 package idv.luchafang.videotrimmer.tools
+import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.ImageView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions
+import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.Target
 import java.io.File
 
 internal class SetVideoThumbnailTask constructor(
@@ -21,7 +26,6 @@ internal class SetVideoThumbnailTask constructor(
                 .apply(options)
                 .load(file)
 
-
             if (fadeDuration > 0) {
                 request =
                     request.transition(BitmapTransitionOptions.withCrossFade((fadeDuration / 1000).toInt()))
@@ -33,7 +37,7 @@ internal class SetVideoThumbnailTask constructor(
     }
 
     fun execute(file: File?) {
-        handleFile(file?.path)
+        handleFile(file)
     }
 
     fun execute(uri: Uri?) {
